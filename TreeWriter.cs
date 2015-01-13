@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,101 +20,111 @@ namespace KenjaParser
 		private const string END_TREE = "[TE] ";
 
 		private const string FIELD_ROOT_NAME = "[FE]";
-		private const string CONSTRUCTOR_ROOT_NAME = "[CS] ";
+		private const string PROPERTY_ROOT_NAME = "[PR]";
+		private const string CONSTRUCTOR_ROOT_NAME = "[CS]";
+		private const string METHOD_ROOT_NAME = "[MT]";
+		private const string CLASS_ROOT_NAME = "[CN]";
+		private const string INTERFACE_ROOT_NAME = "[IN]";
 
-		private const string CLASS_ROOT_NAME = "[CN] ";
-		private const string INTERFACE_ROOT_NAME = "[IN] ";
+		private const string BODY = "body";
+		private const string PARAMETERS = "parameters";
 
-		public TreeWriter()
+		private StringBuilder result;
+		private	string inputFilePath;
+
+		public TreeWriter(string inputFilePath)
 		{
-			Write();
+			result = new StringBuilder();
+			this.inputFilePath = inputFilePath;
+			CreateResult();
 		}
 
-		private void Write()
+		public void Write(string outputFilePath)
 		{
-			SyntaxTree tree = CSharpSyntaxTree.ParseText(
-				@"
-					using System;
-					using System.Collections;
-					using System.Linq;
-					using System.Text;
+			File.WriteAllText(outputFilePath, result.ToString());
+		}
 
-					namespace HelloWorld
-					{
-						class Program
-						{
-							string _hoge = ""aa"";
+		private void CreateResult()
+		{
+			SyntaxTree tree = CSharpSyntaxTree.ParseText(inputFilePath);
+			CompilationUnitSyntax root = tree.GetRoot() as CompilationUnitSyntax;
+			foreach (SyntaxNode node in root.Members) {
+				CreateTree(node);
+			}
+			Console.WriteLine(result);
+		}
 
-							static void Main(string[] args)
-							{
-								var a = 10;
-								Console.WriteLine(""Hello, World!"");
-							}
+		private void CreateTree(SyntaxNode node)
+		{
+			if (node is NamespaceDeclarationSyntax) {
+				NamespaceDeclarationSyntax namespaceNode = node as NamespaceDeclarationSyntax;
+				foreach (MemberDeclarationSyntax member in namespaceNode.Members) {
+					CreateTree(member);
+				}
+			} else if (node is ClassDeclarationSyntax) {
+				ClassDeclarationSyntax classNode = node as ClassDeclarationSyntax;
+				result.AppendLine(START_TREE + CLASS_ROOT_NAME);
+				result.AppendLine(START_TREE + classNode.Identifier);
 
-							void Hoge(double hoge1, int hoge2)
-							{
-								int hoge3 = hoge1 + hoge2;
-								Console.WriteLine(hoge3);
-							}
+				FieldDeclarations(classNode.Members.OfType<FieldDeclarationSyntax>());
+				PropertyDecrarations(classNode.Members.OfType<PropertyDeclarationSyntax>());
 
-							public int i {get;set;}
-							var i = 11;
+				result.AppendLine(START_TREE + METHOD_ROOT_NAME);
+				MethodDeclarations(classNode.Members.OfType<MethodDeclarationSyntax>());
 
-						}
-					}");
+				foreach (ClassDeclarationSyntax innerClass in classNode.Members.OfType<ClassDeclarationSyntax>())
+				{
+					CreateTree(innerClass);
+				}
 
-			CompilationUnitSyntax _root = tree.GetRoot() as CompilationUnitSyntax;
-			foreach (SyntaxNode _node in _root.Members) {
-				if (_node is NamespaceDeclarationSyntax) {
-					NamespaceDeclarationSyntax _namespaceNode = _node as NamespaceDeclarationSyntax;
-					foreach (BaseTypeDeclarationSyntax _namepsaceMember in _namespaceNode.Members)
-					{
-						if (_namepsaceMember is ClassDeclarationSyntax)
-						{
-							ClassDeclarationSyntax _classNode = _namepsaceMember as ClassDeclarationSyntax;
-							foreach (var _classMember in _classNode.Members)
-							{
-								if (_classMember is PropertyDeclarationSyntax) {PropertyDecraration((PropertyDeclarationSyntax)_classMember);}
-								if (_classMember is MethodDeclarationSyntax) {MethodDeclaration((MethodDeclarationSyntax)_classMember);}
-								if (_classMember is FieldDeclarationSyntax) {FieldDeclaration((FieldDeclarationSyntax)_classMember);}
-							}
-						}
-					}
+				result.AppendLine(END_TREE + METHOD_ROOT_NAME);
+				result.AppendLine(END_TREE + classNode.Identifier);
+				result.AppendLine(END_TREE + CLASS_ROOT_NAME);
+			}
+		}
+
+		private void MethodDeclarations(IEnumerable<MethodDeclarationSyntax> nodes)
+		{
+			foreach (MethodDeclarationSyntax node in nodes) {
+				string  methodString = node.Identifier + "(";
+				foreach (ParameterSyntax parameter in node.ParameterList.Parameters) {
+					methodString += parameter.Type.ToString() + ",";
+				}
+				methodString = methodString.Remove(methodString.Length - 1) + ")";
+				result.AppendLine(START_TREE + methodString);
+				result.AppendLine(BLOB + BODY);
+				result.AppendLine(BLOB_LINEINFO + node.GetText().Lines.Count + "\n" + node.GetText());
+				result.AppendLine(START_TREE + PARAMETERS);
+				StringBuilder parameterList = new StringBuilder();
+				foreach (ParameterSyntax parameter in node.ParameterList.Parameters) {
+					parameterList.AppendLine(parameter.Type.ToString() + " " + parameter.Identifier);
+				}
+				parameterList = parameterList.Remove(parameterList.Length - 1, 1);
+				result.AppendLine(parameterList.ToString());
+				result.AppendLine(END_TREE + PARAMETERS);
+				result.AppendLine(END_TREE + methodString);
+			}
+		}
+
+		private void PropertyDecrarations(IEnumerable<PropertyDeclarationSyntax> nodes)
+		{
+			result.AppendLine(START_TREE + PROPERTY_ROOT_NAME);
+			foreach (PropertyDeclarationSyntax node in nodes) {
+				result.AppendLine(BLOB + node.Identifier);
+				result.AppendLine(BLOB_LINEINFO + node.GetText().Lines.Count + "\n" + node.GetText());
+			}
+			result.AppendLine(END_TREE + PROPERTY_ROOT_NAME);
+		}
+
+		private void FieldDeclarations(IEnumerable<FieldDeclarationSyntax> nodes)
+		{
+			result.AppendLine(START_TREE + FIELD_ROOT_NAME);
+			foreach (FieldDeclarationSyntax node in nodes) {
+				foreach (VariableDeclaratorSyntax variables in node.Declaration.Variables) {
+					result.AppendLine(BLOB + variables.Identifier);
 				}
 			}
-
-			Console.Read();
-		}
-
-		private void PropertyDecraration(PropertyDeclarationSyntax _node)
-		{
-			Console.WriteLine("Property:: " + _node.GetText());
-		}
-
-		private void MethodDeclaration(MethodDeclarationSyntax _node)
-		{
-			foreach (SyntaxTree _tree in _node.ChildNodes()) {
-				Console.WriteLine(_tree);
-				Console.WriteLine("----");
-			}
-
-			Console.WriteLine("Method:: " + _node.GetText());
-			foreach (SyntaxToken _methodModifier in _node.Modifiers)
-			{
-				Console.WriteLine("Modifier:: " + _methodModifier.Text);
-			}
-			Console.WriteLine("Identifier:: " + _node.ReturnType);
-			Console.WriteLine("Identifier:: " + _node.Identifier);
-			foreach (ParameterSyntax _parameter in _node.ParameterList.Parameters)
-			{
-				Console.WriteLine("Parameter Type:: " + _parameter.Type.ToString());
-				Console.WriteLine("Parameter Identifier:: " + _parameter.Identifier);
-			}
-		}
-
-		private void FieldDeclaration(FieldDeclarationSyntax _node)
-		{
-			Console.WriteLine("Variable:: " + _node.GetText());
+			result.AppendLine(END_TREE + FIELD_ROOT_NAME);
 		}
 	}
 }
