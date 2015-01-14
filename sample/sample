@@ -1,0 +1,59 @@
+[TS] [CN]
+[TS] Program
+[TS] [FE]
+[BN] hoge
+[BN] hoge2
+[BN] j_
+[BN] x
+[TE] [FE]
+[TS] [PR]
+[BN] i
+[BI] 3
+
+	public int i {get;set;}
+
+[BN] j
+[BI] 9
+	public int j {
+		get {
+			return j_;
+		}
+		set {
+			j_ = value;
+		}
+	}
+
+[TE] [PR]
+[TS] [MT]
+[TS] Main(string[])
+[BN] body
+[BI] 7
+
+	static void Main(string[] args)
+	{
+		var a = 10;
+		Console.WriteLine(""Hello, World!"");
+	}
+
+[TS] parameters
+string[] args
+[TE] parameters
+[TE] Main(string[])
+[TS] Hoge(double,int)
+[BN] body
+[BI] 7
+
+	void Hoge(double hoge1, int hoge2)
+	{
+		int hoge3 = hoge1 + hoge2;
+		Console.WriteLine(hoge3);
+	}
+
+[TS] parameters
+double hoge1
+int hoge2
+[TE] parameters
+[TE] Hoge(double,int)
+[TE] [MT]
+[TE] Program
+[TE] [CN]
