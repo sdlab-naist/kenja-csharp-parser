@@ -18,18 +18,18 @@ namespace KenjaParser
 
 #if DEBUG
 			StreamReader sr = new StreamReader(Console.ReadLine());
-			string inputFileSrc = sr.ReadToEnd();
+			StringBuilder inputFileSrc = new StringBuilder(sr.ReadToEnd());
 #else
-			string inputFileSrc = "";
+			StringBuilder inputFileSrc = new StringBuilder();
 			string line = "";
 			while ((line = Console.ReadLine()) != null)
 			{
-				inputFileSrc += line + System.Environment.NewLine;
+				inputFileSrc.AppendLine(line);
 			}
-			inputFileSrc = inputFileSrc.Remove(inputFileSrc.Length - 1);
+			inputFileSrc = inputFileSrc.Remove(inputFileSrc.Length - 1, 1);
 #endif
 
-			TreeWriter treeWrite = new TreeWriter(inputFileSrc);
+			TreeWriter treeWrite = new TreeWriter(inputFileSrc.ToString());
 			treeWrite.Write(args[0]);
 		}
 
