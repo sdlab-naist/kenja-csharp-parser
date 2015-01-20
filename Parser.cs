@@ -24,8 +24,9 @@ namespace KenjaParser
 			string line = "";
 			while ((line = Console.ReadLine()) != null)
 			{
-				inputFileSrc += line;
+				inputFileSrc += line + System.Environment.NewLine;
 			}
+			inputFileSrc = inputFileSrc.Remove(inputFileSrc.Length - 1);
 #endif
 
 			TreeWriter treeWrite = new TreeWriter(inputFileSrc);

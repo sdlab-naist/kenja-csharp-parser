@@ -96,13 +96,12 @@ namespace KenjaParser
 				methodString = methodString.Remove(methodString.Length - 1) + ")";
 				result.AppendLine(START_TREE + methodString);
 				result.AppendLine(BLOB + BODY);
-				result.AppendLine(BLOB_LINEINFO + node.GetText().Lines.Count + "\n" + node.GetText());
+				result.AppendLine(BLOB_LINEINFO + node.GetText().Lines.Count + System.Environment.NewLine + node.GetText());
 				result.AppendLine(START_TREE + PARAMETERS);
 				StringBuilder parameterList = new StringBuilder();
 				foreach (ParameterSyntax parameter in node.ParameterList.Parameters) {
 					parameterList.AppendLine(parameter.Type.ToString() + " " + parameter.Identifier);
 				}
-				parameterList = parameterList.Remove(parameterList.Length - 1, 1);
 				result.AppendLine(parameterList.ToString());
 				result.AppendLine(END_TREE + PARAMETERS);
 				result.AppendLine(END_TREE + methodString);
@@ -114,7 +113,7 @@ namespace KenjaParser
 			result.AppendLine(START_TREE + PROPERTY_ROOT_NAME);
 			foreach (PropertyDeclarationSyntax node in nodes) {
 				result.AppendLine(BLOB + node.Identifier);
-				result.AppendLine(BLOB_LINEINFO + node.GetText().Lines.Count + "\n" + node.GetText());
+				result.AppendLine(BLOB_LINEINFO + node.GetText().Lines.Count + System.Environment.NewLine + node.GetText());
 			}
 			result.AppendLine(END_TREE + PROPERTY_ROOT_NAME);
 		}
@@ -125,6 +124,7 @@ namespace KenjaParser
 			foreach (FieldDeclarationSyntax node in nodes) {
 				foreach (VariableDeclaratorSyntax variables in node.Declaration.Variables) {
 					result.AppendLine(BLOB + variables.Identifier);
+					result.AppendLine(BLOB_LINEINFO + "0");
 				}
 			}
 			result.AppendLine(END_TREE + FIELD_ROOT_NAME);
