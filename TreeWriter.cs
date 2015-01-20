@@ -51,7 +51,10 @@ namespace KenjaParser
 			foreach (SyntaxNode node in root.Members) {
 				CreateTree(node);
 			}
+
+#if DEBUG
 			Console.WriteLine(result);
+#endif
 		}
 
 		private void CreateTree(SyntaxNode node)
