@@ -30,12 +30,12 @@ namespace KenjaParser
 		private const string PARAMETERS = "parameters";
 
 		private StringBuilder result;
-		private	string inputFilePath;
+		private	string input;
 
-		public TreeWriter(string inputFilePath)
+		public TreeWriter(string input)
 		{
 			result = new StringBuilder();
-			this.inputFilePath = inputFilePath;
+			this.input = input;
 			CreateResult();
 		}
 
@@ -46,7 +46,7 @@ namespace KenjaParser
 
 		private void CreateResult()
 		{
-			SyntaxTree tree = CSharpSyntaxTree.ParseText(inputFilePath);
+			SyntaxTree tree = CSharpSyntaxTree.ParseText(input);
 			CompilationUnitSyntax root = tree.GetRoot() as CompilationUnitSyntax;
 			foreach (SyntaxNode node in root.Members) {
 				CreateTree(node);

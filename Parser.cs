@@ -16,38 +16,38 @@ namespace KenjaParser
 		{
 			if (!CheckArgs(args)) {return;}
 
-			StreamReader sr = new StreamReader(args[0]);
-			string inputFileString = sr.ReadToEnd();
-			string outputDirectory = args[1];
+#if DEBUG
+			StreamReader sr = new StreamReader(Console.ReadLine());
+			string inputFileSrc = sr.ReadToEnd();
+#else
+			string inputFileSrc = "";
+			string line = "";
+			while ((line = Console.ReadLine()) != null)
+			{
+				inputFileSrc += line;
+			}
+#endif
 
-			TreeWriter treeWrite = new TreeWriter(inputFileString);
-
-			string filePath = Path.Combine(outputDirectory, "hoge");
-			treeWrite.Write(filePath);
+			TreeWriter treeWrite = new TreeWriter(inputFileSrc);
+			treeWrite.Write(args[0]);
 		}
 
 		static bool CheckArgs(string[] args)
 		{
-			if (args.Length != 2) {
-				Console.WriteLine("Input Error");
-				Console.WriteLine("Input <Path of Input File> <Path of Output Directory>");
+			if (args.Length != 1) {
+				Console.WriteLine("please input output dir path");
 				return false;
 			}
 
-			string inputFile = args[0];
-			string outputDirectory = args[1];
-
-			if (!File.Exists(inputFile)) {
-				Console.WriteLine(inputFile + " does not exists.");
-				return false;
-			}
-
+			string outputFilePath = args[0];
+			string outputDirectory = Path.GetDirectoryName(outputFilePath);
 			if (!Directory.Exists(outputDirectory)) {
 				try {
 					Directory.CreateDirectory(outputDirectory);
 				}
 				catch {
-					Console.WriteLine("Could not create directory " + outputDirectory);
+					Console.WriteLine("could not create directory " + outputDirectory);
+					return false;
 				}
 			}
 			return true;
