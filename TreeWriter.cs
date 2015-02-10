@@ -85,10 +85,7 @@ namespace KenjaParser
 
 			FieldDeclarations(classNode.Members.OfType<FieldDeclarationSyntax>());
 			PropertyDecrarations(classNode.Members.OfType<PropertyDeclarationSyntax>());
-
-			result.AppendLine(START_TREE + METHOD_ROOT_NAME);
 			MethodDeclarations(classNode.Members.OfType<MethodDeclarationSyntax>());
-			result.AppendLine(END_TREE + METHOD_ROOT_NAME);
 
 			List<ClassDeclarationSyntax> innerClassNodes = classNode.Members.OfType<ClassDeclarationSyntax>().ToList();
 			if (innerClassNodes.Count > 0) {
@@ -104,6 +101,7 @@ namespace KenjaParser
 
 		private void MethodDeclarations(IEnumerable<MethodDeclarationSyntax> nodes)
 		{
+			result.AppendLine(START_TREE + METHOD_ROOT_NAME);
 			foreach (MethodDeclarationSyntax node in nodes) {
 				string  methodString = node.Identifier + "(";
 				foreach (ParameterSyntax parameter in node.ParameterList.Parameters) {
@@ -123,6 +121,7 @@ namespace KenjaParser
 				result.AppendLine(END_TREE + PARAMETERS);
 				result.AppendLine(END_TREE + methodString);
 			}
+			result.AppendLine(END_TREE + METHOD_ROOT_NAME);
 		}
 
 		private void PropertyDecrarations(IEnumerable<PropertyDeclarationSyntax> nodes)
