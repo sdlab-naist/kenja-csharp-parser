@@ -15,12 +15,75 @@ namespace KenjaParser
 		static void Main(string[] args)
 		{
 			if (!CheckArgs(args)) {return;}
+			CreateParser(args).Parse();
+		}
 
+		static bool CheckArgs(string[] args)
+		{
+			if (args.Length != 1 && args.Length != 2) {
+				Console.WriteLine("please input output dir path");
+				return false;
+			}
+			return true;
+		}
+
+		static Parser CreateParser(string[] args)
+		{
+			Parser parser;
+
+			if (args.Length == 1) {
+				parser = new Parser(args);
+			} else {
+				parser = new ParserFromBlobs(args);
+			}
+
+			return parser;
+		}
+
+		////////////////////
+
+		protected string[] args;
+
+		public Parser(string[] args)
+		{
+			this.args = args;
+		}
+
+		public virtual void Parse()
+		{
+			if (!CheckArgs()) {return;}
+
+			TreeWriter treeWrite = new TreeWriter(GetSrc());
+			treeWrite.Write(args[0]);
+		}
+
+		protected virtual bool CheckArgs()
+		{
+			string outputDirectory = Path.GetDirectoryName(args[0]);
+			return CheckDirectoryExists(outputDirectory);
+		}
+
+		protected bool CheckDirectoryExists(string directoryPath)
+		{
+			if (!Directory.Exists(directoryPath)) {
+				try {
+					Directory.CreateDirectory(directoryPath);
+				} catch {
+					Console.WriteLine("could not create directory " + directoryPath);
+					return false;
+				}
+			}
+			return true;
+		}
+
+		private string GetSrc()
+		{
+			StringBuilder inputFileSrc;
 #if DEBUG
 			StreamReader sr = new StreamReader(Console.ReadLine());
-			StringBuilder inputFileSrc = new StringBuilder(sr.ReadToEnd());
+			inputFileSrc = new StringBuilder(sr.ReadToEnd());
 #else
-			StringBuilder inputFileSrc = new StringBuilder();
+			inputFileSrc = new StringBuilder();
 			string line = "";
 			while ((line = Console.ReadLine()) != null)
 			{
@@ -28,30 +91,7 @@ namespace KenjaParser
 			}
 			inputFileSrc = inputFileSrc.Remove(inputFileSrc.Length - 1, 1);
 #endif
-
-			TreeWriter treeWrite = new TreeWriter(inputFileSrc.ToString());
-			treeWrite.Write(args[0]);
-		}
-
-		static bool CheckArgs(string[] args)
-		{
-			if (args.Length != 1) {
-				Console.WriteLine("please input output dir path");
-				return false;
-			}
-
-			string outputFilePath = args[0];
-			string outputDirectory = Path.GetDirectoryName(outputFilePath);
-			if (!Directory.Exists(outputDirectory)) {
-				try {
-					Directory.CreateDirectory(outputDirectory);
-				}
-				catch {
-					Console.WriteLine("could not create directory " + outputDirectory);
-					return false;
-				}
-			}
-			return true;
+			return inputFileSrc.ToString();
 		}
 	}
 }
