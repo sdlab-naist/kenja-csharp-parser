@@ -74,23 +74,32 @@ namespace KenjaParser
 			} else if (node is ClassDeclarationSyntax) {
 				ClassDeclarationSyntax classNode = node as ClassDeclarationSyntax;
 				result.AppendLine(START_TREE + CLASS_ROOT_NAME);
-				result.AppendLine(START_TREE + classNode.Identifier);
-
-				FieldDeclarations(classNode.Members.OfType<FieldDeclarationSyntax>());
-				PropertyDecrarations(classNode.Members.OfType<PropertyDeclarationSyntax>());
-
-				result.AppendLine(START_TREE + METHOD_ROOT_NAME);
-				MethodDeclarations(classNode.Members.OfType<MethodDeclarationSyntax>());
-
-				foreach (ClassDeclarationSyntax innerClass in classNode.Members.OfType<ClassDeclarationSyntax>())
-				{
-					CreateTree(innerClass);
-				}
-
-				result.AppendLine(END_TREE + METHOD_ROOT_NAME);
-				result.AppendLine(END_TREE + classNode.Identifier);
+				ClassDeclaration(classNode);
 				result.AppendLine(END_TREE + CLASS_ROOT_NAME);
 			}
+		}
+
+		private void ClassDeclaration(ClassDeclarationSyntax classNode)
+		{
+			result.AppendLine(START_TREE + classNode.Identifier);
+
+			FieldDeclarations(classNode.Members.OfType<FieldDeclarationSyntax>());
+			PropertyDecrarations(classNode.Members.OfType<PropertyDeclarationSyntax>());
+
+			result.AppendLine(START_TREE + METHOD_ROOT_NAME);
+			MethodDeclarations(classNode.Members.OfType<MethodDeclarationSyntax>());
+			result.AppendLine(END_TREE + METHOD_ROOT_NAME);
+
+			List<ClassDeclarationSyntax> innerClassNodes = classNode.Members.OfType<ClassDeclarationSyntax>().ToList();
+			if (innerClassNodes.Count > 0) {
+				result.AppendLine(START_TREE + CLASS_ROOT_NAME);
+				foreach (ClassDeclarationSyntax innerClass in innerClassNodes) {
+					ClassDeclaration(innerClass);
+				}
+				result.AppendLine(END_TREE + CLASS_ROOT_NAME);
+			}
+
+			result.AppendLine(END_TREE + classNode.Identifier);
 		}
 
 		private void MethodDeclarations(IEnumerable<MethodDeclarationSyntax> nodes)
