@@ -19,6 +19,7 @@ namespace KenjaParser
 		private const string START_TREE = "[TS] ";
 		private const string END_TREE = "[TE] ";
 
+		private const string NAMESPACE_ROOT_NAME = "[NS]";
 		private const string FIELD_ROOT_NAME = "[FE]";
 		private const string PROPERTY_ROOT_NAME = "[PR]";
 		private const string CONSTRUCTOR_ROOT_NAME = "[CS]";
@@ -61,9 +62,15 @@ namespace KenjaParser
 		{
 			if (node is NamespaceDeclarationSyntax) {
 				NamespaceDeclarationSyntax namespaceNode = node as NamespaceDeclarationSyntax;
+				result.AppendLine(START_TREE + NAMESPACE_ROOT_NAME);
+				result.AppendLine(START_TREE + namespaceNode.Name);
+
 				foreach (MemberDeclarationSyntax member in namespaceNode.Members) {
 					CreateTree(member);
 				}
+
+				result.AppendLine(END_TREE + namespaceNode.Name);
+				result.AppendLine(END_TREE + NAMESPACE_ROOT_NAME);
 			} else if (node is ClassDeclarationSyntax) {
 				ClassDeclarationSyntax classNode = node as ClassDeclarationSyntax;
 				result.AppendLine(START_TREE + CLASS_ROOT_NAME);
