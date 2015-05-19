@@ -104,10 +104,8 @@ namespace KenjaParser
 			result.AppendLine(START_TREE + METHOD_ROOT_NAME);
 			foreach (MethodDeclarationSyntax node in nodes) {
 				string  methodString = node.Identifier + "(";
-				foreach (ParameterSyntax parameter in node.ParameterList.Parameters) {
-					methodString += parameter.Type.ToString() + ",";
-				}
-				methodString = methodString.Remove(methodString.Length - 1) + ")";
+				methodString += string.Join(",", node.ParameterList.Parameters.Select(p => p.Type.ToString()));
+				methodString += ")";
 				result.AppendLine(START_TREE + methodString);
 				result.AppendLine(BLOB + BODY);
 				result.AppendLine(BLOB_LINEINFO + node.GetText().Lines.Count);
