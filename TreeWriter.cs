@@ -111,7 +111,8 @@ namespace KenjaParser
 				result.AppendLine(START_TREE + methodString);
 				result.AppendLine(BLOB + BODY);
 				result.AppendLine(BLOB_LINEINFO + node.GetText().Lines.Count);
-				result.AppendLine(node.GetText().ToString());
+				string _text = node.GetText().ToString().Trim('\n');
+				result.AppendLine(_text);
 				result.AppendLine(START_TREE + PARAMETERS);
 				StringBuilder parameterList = new StringBuilder();
 				foreach (ParameterSyntax parameter in node.ParameterList.Parameters) {
@@ -130,7 +131,8 @@ namespace KenjaParser
 			foreach (PropertyDeclarationSyntax node in nodes) {
 				result.AppendLine(BLOB + node.Identifier);
 				result.AppendLine(BLOB_LINEINFO + node.GetText().Lines.Count);
-				result.AppendLine(node.GetText().ToString());
+				string _text = node.GetText().ToString().Trim('\n');
+				result.AppendLine(_text);
 			}
 			result.AppendLine(END_TREE + PROPERTY_ROOT_NAME);
 		}
