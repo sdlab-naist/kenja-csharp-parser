@@ -21,7 +21,8 @@ namespace KenjaParser
 		static bool CheckArgs(string[] args)
 		{
 			if (args.Length != 1 && args.Length != 2) {
-				Console.WriteLine("please input output dir path");
+				Console.WriteLine("Usage (for a blob): kenja-csharp-parser.exe <output dir path>");
+				Console.WriteLine("Usage (for blos): kenja-csharp-parser.exe <src repository path> <output dir path>");
 				return false;
 			}
 			return true;
