@@ -31,6 +31,7 @@ namespace KenjaParser
 		private const string PARAMETERS = "parameters";
 
 		private StringBuilder result;
+		private Tree root;
 		private	string input;
 
 		public TreeWriter(string input)
@@ -50,101 +51,103 @@ namespace KenjaParser
 			SyntaxTree tree = CSharpSyntaxTree.ParseText(input);
 			CompilationUnitSyntax root = tree.GetRoot() as CompilationUnitSyntax;
 			foreach (SyntaxNode node in root.Members) {
-				CreateTree(node);
+				CreateTree(node, this.root);
 			}
+			this.root.AppendToBuilder(result);
 
 #if DEBUG
 			Console.WriteLine(result);
 #endif
 		}
 
-		private void CreateTree(SyntaxNode node)
+		private void CreateTree(SyntaxNode node, Tree currentRoot)
 		{
 			if (node is NamespaceDeclarationSyntax) {
 				NamespaceDeclarationSyntax namespaceNode = node as NamespaceDeclarationSyntax;
-				result.AppendLine(START_TREE + NAMESPACE_ROOT_NAME);
-				result.AppendLine(START_TREE + namespaceNode.Name);
+				// FIXME Namespace will be able to appeare twice in the root tree.
+				Tree nameSpaceRoot = new Tree(NAMESPACE_ROOT_NAME);
+				Tree nameSpaceTree = new Tree(namespaceNode.Name.ToString());
+				nameSpaceRoot.AppendObject(nameSpaceTree);
 
 				foreach (MemberDeclarationSyntax member in namespaceNode.Members) {
-					CreateTree(member);
+					CreateTree(member, nameSpaceTree);
 				}
-
-				result.AppendLine(END_TREE + namespaceNode.Name);
-				result.AppendLine(END_TREE + NAMESPACE_ROOT_NAME);
+				currentRoot.AppendObject(nameSpaceRoot);
 			} else if (node is ClassDeclarationSyntax) {
 				ClassDeclarationSyntax classNode = node as ClassDeclarationSyntax;
-				result.AppendLine(START_TREE + CLASS_ROOT_NAME);
-				ClassDeclaration(classNode);
-				result.AppendLine(END_TREE + CLASS_ROOT_NAME);
+				Tree classRootTree = new Tree(CLASS_ROOT_NAME);
+
+				classRootTree.AppendObject(ClassDeclaration(classNode, classRootTree));
+				currentRoot.AppendObject(classRootTree);
 			}
 		}
 
-		private void ClassDeclaration(ClassDeclarationSyntax classNode)
+		private GitObject ClassDeclaration(ClassDeclarationSyntax classNode, Tree classRootTree)
 		{
-			result.AppendLine(START_TREE + classNode.Identifier);
+			Tree classTree = new Tree(classNode.Identifier.ToString());
 
-			FieldDeclarations(classNode.Members.OfType<FieldDeclarationSyntax>());
-			PropertyDecrarations(classNode.Members.OfType<PropertyDeclarationSyntax>());
-			MethodDeclarations(classNode.Members.OfType<MethodDeclarationSyntax>());
+			classTree.AppendObject(FieldDeclarations(classNode.Members.OfType<FieldDeclarationSyntax>()));
+			classTree.AppendObject(PropertyDecrarations(classNode.Members.OfType<PropertyDeclarationSyntax>()));
+			classTree.AppendObject(MethodDeclarations(classNode.Members.OfType<MethodDeclarationSyntax>()));
 
 			List<ClassDeclarationSyntax> innerClassNodes = classNode.Members.OfType<ClassDeclarationSyntax>().ToList();
 			if (innerClassNodes.Count > 0) {
-				result.AppendLine(START_TREE + CLASS_ROOT_NAME);
+				Tree innerClassRootTree = new Tree(CLASS_ROOT_NAME);
 				foreach (ClassDeclarationSyntax innerClass in innerClassNodes) {
-					ClassDeclaration(innerClass);
+					innerClassRootTree.AppendObject(ClassDeclaration(innerClass, innerClassRootTree));
 				}
-				result.AppendLine(END_TREE + CLASS_ROOT_NAME);
+				classTree.AppendObject(innerClassRootTree);
 			}
-
-			result.AppendLine(END_TREE + classNode.Identifier);
+			return classTree;
 		}
 
-		private void MethodDeclarations(IEnumerable<MethodDeclarationSyntax> nodes)
+		private GitObject MethodDeclarations(IEnumerable<MethodDeclarationSyntax> nodes)
 		{
-			result.AppendLine(START_TREE + METHOD_ROOT_NAME);
+			Tree methodRootTree = new Tree(METHOD_ROOT_NAME);
 			foreach (MethodDeclarationSyntax node in nodes) {
 				string  methodString = node.Identifier + "(";
 				methodString += string.Join(",", node.ParameterList.Parameters.Select(p => p.Type.ToString()));
 				methodString += ")";
-				result.AppendLine(START_TREE + methodString);
-				result.AppendLine(BLOB + BODY);
-				result.AppendLine(BLOB_LINEINFO + node.GetText().Lines.Count);
+				Tree methodTree = new Tree(methodString);
 				string _text = node.GetText().ToString().Trim('\n');
-				result.AppendLine(_text);
-				result.AppendLine(START_TREE + PARAMETERS);
-				StringBuilder parameterList = new StringBuilder();
-				foreach (ParameterSyntax parameter in node.ParameterList.Parameters) {
-					parameterList.AppendLine(parameter.Type.ToString() + " " + parameter.Identifier);
-				}
-				result.AppendLine(parameterList.ToString());
-				result.AppendLine(END_TREE + PARAMETERS);
-				result.AppendLine(END_TREE + methodString);
+				methodTree.AppendObject(new Blob(BODY, _text));
+
+				// FIXME parameters should be stored as a blob.
+				//result.AppendLine(START_TREE + PARAMETERS);
+				//Tree parameterList = new Tree(PARAMETERS);
+				//StringBuilder parameterList = new StringBuilder();
+				//foreach (ParameterSyntax parameter in node.ParameterList.Parameters) {
+				//	parameterList.AppendLine(parameter.Type.ToString() + " " + parameter.Identifier);
+				//}
+				//result.AppendLine(parameterList.ToString());
+				//result.AppendLine(END_TREE + PARAMETERS);
+				//result.AppendLine(END_TREE + methodString);
+				methodRootTree.AppendObject(methodTree);
 			}
-			result.AppendLine(END_TREE + METHOD_ROOT_NAME);
+			return methodRootTree;
 		}
 
-		private void PropertyDecrarations(IEnumerable<PropertyDeclarationSyntax> nodes)
+		private GitObject PropertyDecrarations(IEnumerable<PropertyDeclarationSyntax> nodes)
 		{
-			result.AppendLine(START_TREE + PROPERTY_ROOT_NAME);
+			Tree propertyRootTree = new Tree(PROPERTY_ROOT_NAME);
 			foreach (PropertyDeclarationSyntax node in nodes) {
-				result.AppendLine(BLOB + node.Identifier);
-				result.AppendLine(BLOB_LINEINFO + node.GetText().Lines.Count);
 				string _text = node.GetText().ToString().Trim('\n');
-				result.AppendLine(_text);
+				Blob prop = new Blob(node.Identifier.ToString(), _text);
+				propertyRootTree.AppendObject(prop);
 			}
-			result.AppendLine(END_TREE + PROPERTY_ROOT_NAME);
+			return propertyRootTree;
 		}
 
-		private void FieldDeclarations(IEnumerable<FieldDeclarationSyntax> nodes)
+		private GitObject FieldDeclarations(IEnumerable<FieldDeclarationSyntax> nodes)
 		{
-			result.AppendLine(START_TREE + FIELD_ROOT_NAME);
+			Tree fieldRootTree = new Tree(FIELD_ROOT_NAME);
 			foreach (FieldDeclarationSyntax node in nodes) {
 				foreach (VariableDeclaratorSyntax variables in node.Declaration.Variables) {
-					result.AppendLine(BLOB + variables.Identifier);
-					result.AppendLine(BLOB_LINEINFO + "0");
+					Blob field = new Blob(variables.Identifier.ToString(), "");
+					fieldRootTree.AppendObject(field);
 				}
 			}
-			result.AppendLine(END_TREE + FIELD_ROOT_NAME);
+			return fieldRootTree;
 		}
 	}
 }
