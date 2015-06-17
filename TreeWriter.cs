@@ -31,7 +31,7 @@ namespace KenjaParser
 		private const string PARAMETERS = "parameters";
 
 		private StringBuilder result;
-		private Tree root;
+		private Tree root = new Tree("");
 		private	string input;
 
 		public TreeWriter(string input)
