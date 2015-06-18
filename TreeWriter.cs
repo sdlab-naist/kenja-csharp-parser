@@ -23,22 +23,27 @@ namespace KenjaParser
 		private const string BODY = "body";
 		private const string PARAMETERS = "parameters";
 
-		private StringBuilder result;
 		private	string input;
 
 		public TreeWriter(string input)
 		{
-			result = new StringBuilder();
 			this.input = input;
-			CreateResult();
 		}
 
 		public void Write(string outputFilePath)
 		{
+			StringBuilder result = new StringBuilder();
+			Tree rootTree = CreateResult();
+			rootTree.AppendToBuilder(result);
+
 			File.WriteAllText(outputFilePath, result.ToString());
+
+#if DEBUG
+			Console.WriteLine(result);
+#endif
 		}
 
-		private void CreateResult()
+		private Tree CreateResult()
 		{
 			SyntaxTree tree = CSharpSyntaxTree.ParseText(input);
 			CompilationUnitSyntax root = tree.GetRoot() as CompilationUnitSyntax;
@@ -46,11 +51,7 @@ namespace KenjaParser
 			foreach (SyntaxNode node in root.Members) {
 				CreateTree(node, rootGitTree);
 			}
-			rootGitTree.AppendToBuilder(result);
-
-#if DEBUG
-			Console.WriteLine(result);
-#endif
+			return rootGitTree;
 		}
 
 		private void CreateTree(SyntaxNode node, Tree currentRoot)
