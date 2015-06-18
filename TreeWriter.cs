@@ -58,15 +58,7 @@ namespace KenjaParser
 		{	
 			SyntaxList<MemberDeclarationSyntax> members;
 			Tree nameSpaceRoot;
-			if (node is NamespaceDeclarationSyntax) {
-				var n = node as NamespaceDeclarationSyntax;
-				members = n.Members;
-				nameSpaceRoot = new Tree(n.Name.ToString());
-			} else {
-				var n = node as CompilationUnitSyntax;
-				members = n.Members;
-				nameSpaceRoot = new Tree("");
-			}
+			GetNameSpaceRootAndNodeMembers(node, out members, out nameSpaceRoot);
 			
 			Tree classRoot = new Tree(CLASS_ROOT_NAME);
 			Tree innerNameSpaceRoot = new Tree(NAMESPACE_ROOT_NAME);
@@ -88,6 +80,19 @@ namespace KenjaParser
 			}
 			
 			return nameSpaceRoot;
+		}
+
+		private void GetNameSpaceRootAndNodeMembers(SyntaxNode node, out SyntaxList<MemberDeclarationSyntax> members, out Tree nameSpaceRoot)
+		{
+			if (node is NamespaceDeclarationSyntax) {
+				var n = node as NamespaceDeclarationSyntax;
+				members = n.Members;
+				nameSpaceRoot = new Tree(n.Name.ToString());
+			} else {
+				var n = node as CompilationUnitSyntax;
+				members = n.Members;
+				nameSpaceRoot = new Tree("");
+			}
 		}
 
 		private GitObject ClassDeclaration(ClassDeclarationSyntax classNode)
