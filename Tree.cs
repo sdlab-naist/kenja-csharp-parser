@@ -13,6 +13,8 @@ namespace KenjaParser
         private const string START_TREE = "[TS] ";
         private const string END_TREE = "[TE] ";
         private List<GitObject> objects = new List<GitObject>();
+
+        public int Length { get { return objects.Count; } }
         
         /// <param name="name">
         /// Name of a tree. For a root tree, empty string should be provided.
