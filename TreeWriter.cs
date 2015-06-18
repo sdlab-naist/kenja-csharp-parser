@@ -51,6 +51,9 @@ namespace KenjaParser
 			return NameSpaceDeclaration(root);
 		}
 
+		/// <summary>
+		/// CompilationUnitSyntax is also regarded as a NameSpaceDeclaration.
+		/// </summary>
 		private Tree NameSpaceDeclaration(SyntaxNode node)
 		{	
 			SyntaxList<MemberDeclarationSyntax> members;
