@@ -48,10 +48,10 @@ namespace KenjaParser
 			SyntaxTree tree = CSharpSyntaxTree.ParseText(input);
 			CompilationUnitSyntax root = tree.GetRoot() as CompilationUnitSyntax;
 
-			return CreateTree(root);
+			return NameSpaceDeclaration(root);
 		}
 
-		private Tree CreateTree(SyntaxNode node)
+		private Tree NameSpaceDeclaration(SyntaxNode node)
 		{	
 			SyntaxList<MemberDeclarationSyntax> members;
 			Tree nameSpaceRoot;
@@ -73,7 +73,7 @@ namespace KenjaParser
 					var classDecl = member as ClassDeclarationSyntax;
 					classRoot.AppendObject(ClassDeclaration(classDecl));
 				} else if (member is NamespaceDeclarationSyntax) {
-					innerNameSpaceRoot.AppendObject(CreateTree(member));
+					innerNameSpaceRoot.AppendObject(NameSpaceDeclaration(member));
 				}
 			}
 			
