@@ -3,58 +3,84 @@ using System.Collections;
 using System.Linq;
 using System.Text;
 
-class Program
+namespace Namespace1
 {
-	string hoge = "aa";
-	string hoge2 = "aa";
-
-	static void Main(string[] args)
+	namespace InnerNamespace1
 	{
-		var a = 10;
-		Console.WriteLine(""Hello, World!"");
-	}
+		class Sample
+		{
+			string hoge;
 
-	void Hoge(double hoge1, int hoge2)
-	{
-		int hoge3 = hoge1 + hoge2;
-		Console.WriteLine(hoge3);
-	}
-
-	public int i {get;set;}
-
-	public int j_;
-	public int j {
-		get {
-			return j_;
-		}
-		set {
-			j_ = value;
+			public Sample(string hoge)
+			{
+				this.hoge = hoge;
+			}
 		}
 	}
 
-	var x = 11;
+	class Sample
+	{
+		public string hoge = "aa";
+		private string fuga = "aa";
 
-	// class Program2
-	// 	{
-	// 		public int num = 1;
+		public string piyo {
+			get {return fuga;}
+		}
 
-	// 		void Hoge(double hoge1, int hoge2, string hoge3)
-	// 		{
-	// 			Console.WriteLine(hoge4);
-	// 		}
-	// 	}
-	// }
+		class InnerClass
+		{
+			public InnerClass()
+			{
+				Console.WriteLine("Inner Class");
+			}
+		}
+
+		void SampleMain(string[] args)
+		{
+			var a = 10;
+			Console.WriteLine("Hello, World!");
+		}
+
+		void Hoge(double p1, int p2)
+		{
+			double i = p1 + (double)p2;
+			Console.WriteLine(i);
+		}
+	}
 }
 
-// namespace HelloWorld
-// {
-// 	class Program2
-// 	{
-// 		public int num = 1;
+class Class1
+{
+	int hoge;
+	private int Hoge()
+	{
+		return hoge;
+	}
+}
 
-// 		void Hoge(double hoge1, int hoge2, string hoge3)
-// 		{
-// 			Console.WriteLine(hoge4);
-// 		}
-// 	}
-// }
+namespace Namespace2
+{
+	class Sample
+	{
+		public int i {get;set;}
+
+		public int j_;
+		public int j {
+			get {
+				return j_;
+			}
+			set {
+				j_ = value;
+			}
+		}
+	}
+}
+
+class Class2
+{
+	float fuga;
+	private float Fuga()
+	{
+		return fuga;
+	}
+}
