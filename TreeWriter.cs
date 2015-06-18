@@ -32,14 +32,14 @@ namespace KenjaParser
 
 		public void Write(string outputFilePath)
 		{
-			StringBuilder result = new StringBuilder();
+			StringBuilder treeTextBuilder = new StringBuilder();
 			Tree rootTree = ParseAndCreateGitTree();
-			rootTree.AppendToBuilder(result);
+			rootTree.AppendToBuilder(treeTextBuilder);
 
-			File.WriteAllText(outputFilePath, result.ToString());
+			File.WriteAllText(outputFilePath, treeTextBuilder.ToString());
 
 #if DEBUG
-			Console.WriteLine(result);
+			Console.WriteLine(treeTextBuilder);
 #endif
 		}
 
