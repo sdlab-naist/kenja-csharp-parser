@@ -12,13 +12,6 @@ namespace KenjaParser
 {
 	public class TreeWriter
 	{
-		private const string BLOB = "[BN] ";
-		private const string BLOB_LINEINFO = "[BI] ";
-
-		private const string TREE = "[TN] ";
-		private const string START_TREE = "[TS] ";
-		private const string END_TREE = "[TE] ";
-
 		private const string NAMESPACE_ROOT_NAME = "[NS]";
 		private const string FIELD_ROOT_NAME = "[FE]";
 		private const string PROPERTY_ROOT_NAME = "[PR]";
@@ -30,34 +23,35 @@ namespace KenjaParser
 		private const string BODY = "body";
 		private const string PARAMETERS = "parameters";
 
-		private StringBuilder result;
-		private Tree root = new Tree("");
 		private	string input;
 
 		public TreeWriter(string input)
 		{
-			result = new StringBuilder();
 			this.input = input;
-			CreateResult();
 		}
 
 		public void Write(string outputFilePath)
 		{
-			File.WriteAllText(outputFilePath, result.ToString());
+			StringBuilder treeTextBuilder = new StringBuilder();
+			Tree rootTree = ParseAndCreateGitTree();
+			rootTree.AppendToBuilder(treeTextBuilder);
+
+			File.WriteAllText(outputFilePath, treeTextBuilder.ToString());
+
+#if DEBUG
+			Console.WriteLine(treeTextBuilder);
+#endif
 		}
 
-		private void CreateResult()
+		private Tree ParseAndCreateGitTree()
 		{
 			SyntaxTree tree = CSharpSyntaxTree.ParseText(input);
 			CompilationUnitSyntax root = tree.GetRoot() as CompilationUnitSyntax;
+			Tree rootGitTree = new Tree("");
 			foreach (SyntaxNode node in root.Members) {
-				CreateTree(node, this.root);
+				CreateTree(node, rootGitTree);
 			}
-			this.root.AppendToBuilder(result);
-
-#if DEBUG
-			Console.WriteLine(result);
-#endif
+			return rootGitTree;
 		}
 
 		private void CreateTree(SyntaxNode node, Tree currentRoot)
