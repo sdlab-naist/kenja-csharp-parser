@@ -24,7 +24,6 @@ namespace KenjaParser
 		private const string PARAMETERS = "parameters";
 
 		private StringBuilder result;
-		private Tree root = new Tree("");
 		private	string input;
 
 		public TreeWriter(string input)
@@ -43,10 +42,11 @@ namespace KenjaParser
 		{
 			SyntaxTree tree = CSharpSyntaxTree.ParseText(input);
 			CompilationUnitSyntax root = tree.GetRoot() as CompilationUnitSyntax;
+			Tree rootGitTree = new Tree("");
 			foreach (SyntaxNode node in root.Members) {
-				CreateTree(node, this.root);
+				CreateTree(node, rootGitTree);
 			}
-			this.root.AppendToBuilder(result);
+			rootGitTree.AppendToBuilder(result);
 
 #if DEBUG
 			Console.WriteLine(result);
