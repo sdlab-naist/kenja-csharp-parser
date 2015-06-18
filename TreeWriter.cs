@@ -47,36 +47,47 @@ namespace KenjaParser
 		{
 			SyntaxTree tree = CSharpSyntaxTree.ParseText(input);
 			CompilationUnitSyntax root = tree.GetRoot() as CompilationUnitSyntax;
-			Tree rootGitTree = new Tree("");
-			foreach (SyntaxNode node in root.Members) {
-				CreateTree(node, rootGitTree);
-			}
-			return rootGitTree;
+
+			return CreateTree(root);
 		}
 
-		private void CreateTree(SyntaxNode node, Tree currentRoot)
-		{
+		private Tree CreateTree(SyntaxNode node)
+		{	
+			SyntaxList<MemberDeclarationSyntax> members;
+			Tree nameSpaceRoot;
 			if (node is NamespaceDeclarationSyntax) {
-				NamespaceDeclarationSyntax namespaceNode = node as NamespaceDeclarationSyntax;
-				// FIXME Namespace will be able to appeare twice in the root tree.
-				Tree nameSpaceRoot = new Tree(NAMESPACE_ROOT_NAME);
-				Tree nameSpaceTree = new Tree(namespaceNode.Name.ToString());
-				nameSpaceRoot.AppendObject(nameSpaceTree);
-
-				foreach (MemberDeclarationSyntax member in namespaceNode.Members) {
-					CreateTree(member, nameSpaceTree);
-				}
-				currentRoot.AppendObject(nameSpaceRoot);
-			} else if (node is ClassDeclarationSyntax) {
-				ClassDeclarationSyntax classNode = node as ClassDeclarationSyntax;
-				Tree classRootTree = new Tree(CLASS_ROOT_NAME);
-
-				classRootTree.AppendObject(ClassDeclaration(classNode, classRootTree));
-				currentRoot.AppendObject(classRootTree);
+				var n = node as NamespaceDeclarationSyntax;
+				members = n.Members;
+				nameSpaceRoot = new Tree(n.Name.ToString());
+			} else {
+				var n = node as CompilationUnitSyntax;
+				members = n.Members;
+				nameSpaceRoot = new Tree("");
 			}
+			
+			Tree classRoot = new Tree(CLASS_ROOT_NAME);
+			Tree innerNameSpaceRoot = new Tree(NAMESPACE_ROOT_NAME);
+			
+			foreach (MemberDeclarationSyntax member in members) {
+				if (member is ClassDeclarationSyntax) {
+					var classDecl = member as ClassDeclarationSyntax;
+					classRoot.AppendObject(ClassDeclaration(classDecl));
+				} else if (member is NamespaceDeclarationSyntax) {
+					innerNameSpaceRoot.AppendObject(CreateTree(member));
+				}
+			}
+			
+			if (classRoot.Length > 0 ) {
+				nameSpaceRoot.AppendObject(classRoot);
+			}
+			if (innerNameSpaceRoot.Length > 0) {
+				nameSpaceRoot.AppendObject(innerNameSpaceRoot);
+			}
+			
+			return nameSpaceRoot;
 		}
 
-		private GitObject ClassDeclaration(ClassDeclarationSyntax classNode, Tree classRootTree)
+		private GitObject ClassDeclaration(ClassDeclarationSyntax classNode)
 		{
 			Tree classTree = new Tree(classNode.Identifier.ToString());
 
@@ -88,7 +99,7 @@ namespace KenjaParser
 			if (innerClassNodes.Count > 0) {
 				Tree innerClassRootTree = new Tree(CLASS_ROOT_NAME);
 				foreach (ClassDeclarationSyntax innerClass in innerClassNodes) {
-					innerClassRootTree.AppendObject(ClassDeclaration(innerClass, innerClassRootTree));
+					innerClassRootTree.AppendObject(ClassDeclaration(innerClass));
 				}
 				classTree.AppendObject(innerClassRootTree);
 			}
