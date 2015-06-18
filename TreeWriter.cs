@@ -12,13 +12,6 @@ namespace KenjaParser
 {
 	public class TreeWriter
 	{
-		private const string BLOB = "[BN] ";
-		private const string BLOB_LINEINFO = "[BI] ";
-
-		private const string TREE = "[TN] ";
-		private const string START_TREE = "[TS] ";
-		private const string END_TREE = "[TE] ";
-
 		private const string NAMESPACE_ROOT_NAME = "[NS]";
 		private const string FIELD_ROOT_NAME = "[FE]";
 		private const string PROPERTY_ROOT_NAME = "[PR]";
