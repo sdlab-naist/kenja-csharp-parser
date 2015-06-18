@@ -33,7 +33,7 @@ namespace KenjaParser
 		public void Write(string outputFilePath)
 		{
 			StringBuilder result = new StringBuilder();
-			Tree rootTree = CreateResult();
+			Tree rootTree = ParseAndCreateGitTree();
 			rootTree.AppendToBuilder(result);
 
 			File.WriteAllText(outputFilePath, result.ToString());
@@ -43,7 +43,7 @@ namespace KenjaParser
 #endif
 		}
 
-		private Tree CreateResult()
+		private Tree ParseAndCreateGitTree()
 		{
 			SyntaxTree tree = CSharpSyntaxTree.ParseText(input);
 			CompilationUnitSyntax root = tree.GetRoot() as CompilationUnitSyntax;
