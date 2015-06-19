@@ -122,7 +122,7 @@ namespace KenjaParser
 				methodString += string.Join(",", node.ParameterList.Parameters.Select(p => p.Type.ToString()));
 				methodString += ")";
 				Tree methodTree = new Tree(methodString);
-				string _text = node.GetText().ToString().Trim('\n');
+				string _text = node.Body.GetText().ToString().Trim('\n');
 				methodTree.AppendObject(new Blob(BODY, _text));
 
 				// FIXME parameters should be stored as a blob.
