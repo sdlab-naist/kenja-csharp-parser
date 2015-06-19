@@ -24,6 +24,8 @@ namespace KenjaParser
 
 		public override void AppendToBuilder(StringBuilder builder)
 		{
+			if (Length == 0) {return;}
+
 			if(name != ""){
 				builder.AppendLine(START_TREE + name);
 			}
