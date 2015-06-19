@@ -2,15 +2,15 @@
 
 namespace KenjaParser
 {
-    abstract public class GitObject
-    {
-        public string name { get; set; }
+	abstract public class GitObject
+	{
+		public string name { get; set; }
 
-        public GitObject(string name)
-        {
-            this.name = name;
-        }
+		public GitObject(string name)
+		{
+			this.name = name;
+		}
 
-        abstract public void AppendToBuilder(StringBuilder builder);
-    }
+		abstract public void AppendToBuilder(StringBuilder builder);
+	}
 }
