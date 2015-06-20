@@ -98,6 +98,7 @@ namespace KenjaParser
 			classTree.AppendObject(FieldDeclarations(classNode.Members.OfType<FieldDeclarationSyntax>()));
 			classTree.AppendObject(PropertyDecrarations(classNode.Members.OfType<PropertyDeclarationSyntax>()));
 			classTree.AppendObject(MethodDeclarations(classNode.Members.OfType<MethodDeclarationSyntax>()));
+			classTree.AppendObject(ConstructorDeclarations(classNode.Members.OfType<ConstructorDeclarationSyntax>()));
 
 			List<ClassDeclarationSyntax> innerClassNodes = classNode.Members.OfType<ClassDeclarationSyntax>().ToList();
 			if (innerClassNodes.Count > 0) {
@@ -114,23 +115,37 @@ namespace KenjaParser
 		{
 			Tree methodRootTree = new Tree(METHOD_ROOT_NAME);
 			foreach (MethodDeclarationSyntax node in nodes) {
-				string  methodString = node.Identifier + "(";
-				methodString += string.Join(",", node.ParameterList.Parameters.Select(p => p.Type.ToString()));
-				methodString += ")";
-				Tree methodTree = new Tree(methodString);
-				string _text = node.Body.GetText().ToString().Trim('\n');
-				methodTree.AppendObject(new Blob(BODY, _text));
-
-				StringBuilder parameterStringBuilder = new StringBuilder();
-				foreach (ParameterSyntax parameter in node.ParameterList.Parameters) {
-					parameterStringBuilder.AppendLine(parameter.Type.ToString() + " " + parameter.Identifier);
-				}
-				string parameterString = parameterStringBuilder.ToString().Trim('\n');
-				methodTree.AppendObject(new Blob(PARAMETERS, parameterString.ToString()));
-
-				methodRootTree.AppendObject(methodTree);
+				CreateBodyParametersBlob(methodRootTree, node, node.Identifier.ToString());
 			}
 			return methodRootTree;
+		}
+
+		private GitObject ConstructorDeclarations(IEnumerable<ConstructorDeclarationSyntax> nodes)
+		{
+			Tree constructorRootTree = new Tree(CONSTRUCTOR_ROOT_NAME);
+			foreach (ConstructorDeclarationSyntax node in nodes) {
+				CreateBodyParametersBlob(constructorRootTree, node, node.Identifier.ToString());
+			}
+			return constructorRootTree;
+		}
+
+		private void CreateBodyParametersBlob(Tree tree, BaseMethodDeclarationSyntax node, string identifier)
+		{
+			string  methodString = identifier + "(";
+			methodString += string.Join(",", node.ParameterList.Parameters.Select(p => p.Type.ToString()));
+			methodString += ")";
+			Tree methodTree = new Tree(methodString);
+			string _text = node.Body.GetText().ToString().Trim('\n');
+			methodTree.AppendObject(new Blob(BODY, _text));
+
+			StringBuilder parameterStringBuilder = new StringBuilder();
+			foreach (ParameterSyntax parameter in node.ParameterList.Parameters) {
+				parameterStringBuilder.AppendLine(parameter.Type.ToString() + " " + parameter.Identifier);
+			}
+			string parameterString = parameterStringBuilder.ToString().Trim('\n');
+			methodTree.AppendObject(new Blob(PARAMETERS, parameterString.ToString()));
+
+			tree.AppendObject(methodTree);
 		}
 
 		private GitObject PropertyDecrarations(IEnumerable<PropertyDeclarationSyntax> nodes)
