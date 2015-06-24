@@ -72,12 +72,8 @@ namespace KenjaParser
 				}
 			}
 
-			if (classRoot.Length > 0 ) {
-				nameSpaceRoot.AppendObject(classRoot);
-			}
-			if (innerNameSpaceRoot.Length > 0) {
-				nameSpaceRoot.AppendObject(innerNameSpaceRoot);
-			}
+			nameSpaceRoot.AppendObject(classRoot);
+			nameSpaceRoot.AppendObject(innerNameSpaceRoot);
 
 			return nameSpaceRoot;
 		}
