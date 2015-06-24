@@ -55,14 +55,14 @@ namespace KenjaParser
 		/// CompilationUnitSyntax is also regarded as a NameSpaceDeclaration.
 		/// </summary>
 		private Tree NameSpaceDeclaration(SyntaxNode node)
-		{	
+		{
 			SyntaxList<MemberDeclarationSyntax> members;
 			Tree nameSpaceRoot;
 			GetNameSpaceRootAndNodeMembers(node, out members, out nameSpaceRoot);
-			
+
 			Tree classRoot = new Tree(CLASS_ROOT_NAME);
 			Tree innerNameSpaceRoot = new Tree(NAMESPACE_ROOT_NAME);
-			
+
 			foreach (MemberDeclarationSyntax member in members) {
 				if (member is ClassDeclarationSyntax) {
 					var classDecl = member as ClassDeclarationSyntax;
@@ -71,14 +71,14 @@ namespace KenjaParser
 					innerNameSpaceRoot.AppendObject(NameSpaceDeclaration(member));
 				}
 			}
-			
+
 			if (classRoot.Length > 0 ) {
 				nameSpaceRoot.AppendObject(classRoot);
 			}
 			if (innerNameSpaceRoot.Length > 0) {
 				nameSpaceRoot.AppendObject(innerNameSpaceRoot);
 			}
-			
+
 			return nameSpaceRoot;
 		}
 
