@@ -125,16 +125,13 @@ namespace KenjaParser
 				string _text = node.Body.GetText().ToString().Trim('\n');
 				methodTree.AppendObject(new Blob(BODY, _text));
 
-				// FIXME parameters should be stored as a blob.
-				//result.AppendLine(START_TREE + PARAMETERS);
-				//Tree parameterList = new Tree(PARAMETERS);
-				//StringBuilder parameterList = new StringBuilder();
-				//foreach (ParameterSyntax parameter in node.ParameterList.Parameters) {
-				//	parameterList.AppendLine(parameter.Type.ToString() + " " + parameter.Identifier);
-				//}
-				//result.AppendLine(parameterList.ToString());
-				//result.AppendLine(END_TREE + PARAMETERS);
-				//result.AppendLine(END_TREE + methodString);
+				StringBuilder parameterStringBuilder = new StringBuilder();
+				foreach (ParameterSyntax parameter in node.ParameterList.Parameters) {
+					parameterStringBuilder.AppendLine(parameter.Type.ToString() + " " + parameter.Identifier);
+				}
+				string parameterString = parameterStringBuilder.ToString().Trim('\n');
+				methodTree.AppendObject(new Blob(PARAMETERS, parameterString.ToString()));
+
 				methodRootTree.AppendObject(methodTree);
 			}
 			return methodRootTree;
