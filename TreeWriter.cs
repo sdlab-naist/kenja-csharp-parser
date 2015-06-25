@@ -135,8 +135,11 @@ namespace KenjaParser
 			methodString += string.Join(",", node.ParameterList.Parameters.Select(p => p.Type.ToString()));
 			methodString += ")";
 			Tree methodTree = new Tree(methodString);
-			string _text = node.Body.GetText().ToString().Trim('\n');
-			methodTree.AppendObject(new Blob(BODY, _text));
+			if ( node.Body != null)
+			{
+				string _text = node.Body.GetText().ToString().Trim('\n');
+				methodTree.AppendObject(new Blob(BODY, _text));
+			}
 
 			StringBuilder parameterStringBuilder = new StringBuilder();
 			foreach (ParameterSyntax parameter in node.ParameterList.Parameters) {
