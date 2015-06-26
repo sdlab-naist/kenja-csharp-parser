@@ -83,6 +83,7 @@
     <Compile Include="GitObject.cs" />
     <Compile Include="Tree.cs" />
     <Compile Include="Blob.cs" />
+    <Compile Include="Helper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
