@@ -11,7 +11,7 @@ namespace Namespace1
 		{
 			string hoge;
 
-			public Sample(string hoge)
+			public Sample(ref string hoge, out int integer)
 			{
 				this.hoge = hoge;
 			}
