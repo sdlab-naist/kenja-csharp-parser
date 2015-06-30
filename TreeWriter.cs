@@ -132,7 +132,7 @@ namespace KenjaParser
 		private void CreateBodyParametersBlob(Tree tree, BaseMethodDeclarationSyntax node, string identifier)
 		{
 			string  methodString = identifier + "(";
-			methodString += string.Join(",", node.ParameterList.Parameters.Select(p => p.Type.ToString()));
+			methodString += string.Join(",", node.ParameterList.Parameters.Select(p => p.ToModifierTypeString()));
 			methodString += ")";
 			Tree methodTree = new Tree(methodString);
 			if ( node.Body != null)
@@ -143,7 +143,7 @@ namespace KenjaParser
 
 			StringBuilder parameterStringBuilder = new StringBuilder();
 			foreach (ParameterSyntax parameter in node.ParameterList.Parameters) {
-				parameterStringBuilder.AppendLine(parameter.Type.ToString() + " " + parameter.Identifier);
+				parameterStringBuilder.AppendLine(parameter.ToModifierTypeString() + " " + parameter.Identifier);
 			}
 			string parameterString = parameterStringBuilder.ToString().Trim('\n');
 			methodTree.AppendObject(new Blob(PARAMETERS, parameterString.ToString()));

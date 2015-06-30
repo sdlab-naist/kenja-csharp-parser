@@ -1,59 +1,156 @@
 [TS] [CN]
-[TS] Program
+[TS] Class1
 [TS] [FE]
 [BN] hoge
-[BN] hoge2
+[BI] 1
+
+[TE] [FE]
+[TS] [MT]
+[TS] Hoge()
+[BN] body
+[BI] 3
+	{
+		return hoge;
+	}
+[BN] parameters
+[BI] 1
+
+[TE] Hoge()
+[TE] [MT]
+[TE] Class1
+[TS] Class2
+[TS] [FE]
+[BN] fuga
+[BI] 1
+
+[TE] [FE]
+[TS] [MT]
+[TS] Fuga()
+[BN] body
+[BI] 3
+	{
+		return fuga;
+	}
+[BN] parameters
+[BI] 1
+
+[TE] Fuga()
+[TE] [MT]
+[TE] Class2
+[TE] [CN]
+[TS] [NS]
+[TS] Namespace1
+[TS] [CN]
+[TS] Sample
+[TS] [CN]
+[TS] InnerClass
+[TS] [CS]
+[TS] InnerClass()
+[BN] body
+[BI] 3
+			{
+				Console.WriteLine("Inner Class");
+			}
+[BN] parameters
+[BI] 1
+
+[TE] InnerClass()
+[TE] [CS]
+[TE] InnerClass
+[TE] [CN]
+[TS] [FE]
+[BN] fuga
+[BI] 1
+
+[BN] hoge
+[BI] 1
+
+[TE] [FE]
+[TS] [MT]
+[TS] Hoge(double,int)
+[BN] body
+[BI] 4
+		{
+			double i = p1 + (double)p2;
+			Console.WriteLine(i);
+		}
+[BN] parameters
+[BI] 2
+double p1
+int p2
+[TE] Hoge(double,int)
+[TS] SampleMain(string[])
+[BN] body
+[BI] 4
+		{
+			var a = 10;
+			Console.WriteLine("Hello, World!");
+		}
+[BN] parameters
+[BI] 1
+string[] args
+[TE] SampleMain(string[])
+[TE] [MT]
+[TS] [PR]
+[BN] piyo
+[BI] 3
+		public string piyo {
+			get {return fuga;}
+		}
+[TE] [PR]
+[TE] Sample
+[TE] [CN]
+[TS] [NS]
+[TS] InnerNamespace1
+[TS] [CN]
+[TS] Sample
+[TS] [CS]
+[TS] Sample(ref string,out int)
+[BN] body
+[BI] 3
+			{
+				this.hoge = hoge;
+			}
+[BN] parameters
+[BI] 2
+ref string hoge
+out int integer
+[TE] Sample(ref string,out int)
+[TE] [CS]
+[TS] [FE]
+[BN] hoge
+[BI] 1
+
+[TE] [FE]
+[TE] Sample
+[TE] [CN]
+[TE] InnerNamespace1
+[TE] [NS]
+[TE] Namespace1
+[TS] Namespace2
+[TS] [CN]
+[TS] Sample
+[TS] [FE]
 [BN] j_
-[BN] x
+[BI] 1
+
 [TE] [FE]
 [TS] [PR]
 [BN] i
-[BI] 3
-
-	public int i {get;set;}
-
+[BI] 1
+		public int i {get;set;}
 [BN] j
-[BI] 9
-	public int j {
-		get {
-			return j_;
+[BI] 8
+		public int j {
+			get {
+				return j_;
+			}
+			set {
+				j_ = value;
+			}
 		}
-		set {
-			j_ = value;
-		}
-	}
-
 [TE] [PR]
-[TS] [MT]
-[TS] Main(string[])
-[BN] body
-[BI] 7
-
-	static void Main(string[] args)
-	{
-		var a = 10;
-		Console.WriteLine(""Hello, World!"");
-	}
-
-[TS] parameters
-string[] args
-[TE] parameters
-[TE] Main(string[])
-[TS] Hoge(double,int)
-[BN] body
-[BI] 7
-
-	void Hoge(double hoge1, int hoge2)
-	{
-		int hoge3 = hoge1 + hoge2;
-		Console.WriteLine(hoge3);
-	}
-
-[TS] parameters
-double hoge1
-int hoge2
-[TE] parameters
-[TE] Hoge(double,int)
-[TE] [MT]
-[TE] Program
+[TE] Sample
 [TE] [CN]
+[TE] Namespace2
+[TE] [NS]
