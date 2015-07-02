@@ -18,7 +18,7 @@ namespace Namespace1
 		}
 	}
 
-	class Sample
+	public class Sample
 	{
 		public string hoge = "aa";
 		private string fuga = "aa";
@@ -49,7 +49,7 @@ namespace Namespace1
 	}
 }
 
-class Class1
+abstract class Class1
 {
 	int hoge;
 	private int Hoge()

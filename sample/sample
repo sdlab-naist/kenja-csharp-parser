@@ -17,6 +17,10 @@
 
 [TE] Hoge()
 [TE] [MT]
+[BN] modifiers
+[BI] 2
+abstract
+internal
 [TE] Class1
 [TS] Class2
 [TS] [FE]
@@ -36,6 +40,9 @@
 
 [TE] Fuga()
 [TE] [MT]
+[BN] modifiers
+[BI] 1
+internal
 [TE] Class2
 [TE] [CN]
 [TS] [NS]
@@ -56,6 +63,9 @@
 
 [TE] InnerClass()
 [TE] [CS]
+[BN] modifiers
+[BI] 1
+private
 [TE] InnerClass
 [TE] [CN]
 [TS] [FE]
@@ -98,6 +108,9 @@ string[] args
 			get {return fuga;}
 		}
 [TE] [PR]
+[BN] modifiers
+[BI] 1
+public
 [TE] Sample
 [TE] [CN]
 [TS] [NS]
@@ -122,6 +135,9 @@ out int integer
 [BI] 1
 
 [TE] [FE]
+[BN] modifiers
+[BI] 1
+internal
 [TE] Sample
 [TE] [CN]
 [TE] InnerNamespace1
@@ -150,6 +166,9 @@ out int integer
 			}
 		}
 [TE] [PR]
+[BN] modifiers
+[BI] 1
+internal
 [TE] Sample
 [TE] [CN]
 [TE] Namespace2

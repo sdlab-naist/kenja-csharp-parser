@@ -66,7 +66,7 @@ namespace KenjaParser
 			foreach (MemberDeclarationSyntax member in members) {
 				if (member is ClassDeclarationSyntax) {
 					var classDecl = member as ClassDeclarationSyntax;
-					classRoot.AppendObject(ClassDeclaration(classDecl));
+					classRoot.AppendObject(ClassDeclaration(classDecl, false));
 				} else if (member is NamespaceDeclarationSyntax) {
 					innerNameSpaceRoot.AppendObject(NameSpaceDeclaration(member));
 				}
@@ -91,7 +91,7 @@ namespace KenjaParser
 			}
 		}
 
-		private GitObject ClassDeclaration(ClassDeclarationSyntax classNode)
+		private Tree ClassDeclaration(ClassDeclarationSyntax classNode)
 		{
 			Tree classTree = new Tree(classNode.Identifier.ToString());
 
@@ -104,11 +104,35 @@ namespace KenjaParser
 			if (innerClassNodes.Count > 0) {
 				Tree innerClassRootTree = new Tree(CLASS_ROOT_NAME);
 				foreach (ClassDeclarationSyntax innerClass in innerClassNodes) {
-					innerClassRootTree.AppendObject(ClassDeclaration(innerClass));
+					innerClassRootTree.AppendObject(ClassDeclaration(innerClass, true));
 				}
 				classTree.AppendObject(innerClassRootTree);
 			}
 			return classTree;
+		}
+
+		private Tree ClassDeclaration(ClassDeclarationSyntax classNode, bool isInnerClass)
+		{
+			Tree classTree = ClassDeclaration(classNode);
+			Blob modifiers = new Blob("modifiers", GetClassModifierBody(classNode, isInnerClass));
+			classTree.AppendObject(modifiers);
+
+			return classTree;
+		}
+
+		private string GetClassModifierBody(ClassDeclarationSyntax classNode, bool isInnerClass)
+		{
+			String[] accessLevelModifiers = {"public", "private", "internal", "protected"};
+			var modifiers = classNode.Modifiers.Select(m => m.ToString()).ToList();
+			if (!modifiers.Intersect(accessLevelModifiers).Any())
+			{
+				if(isInnerClass)
+					modifiers.Add("private");
+				else
+					modifiers.Add("internal");
+			}
+			modifiers.Sort();
+			return string.Join("\n", modifiers);
 		}
 
 		private GitObject MethodDeclarations(IEnumerable<MethodDeclarationSyntax> nodes)
