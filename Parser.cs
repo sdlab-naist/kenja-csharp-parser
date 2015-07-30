@@ -80,17 +80,14 @@ namespace KenjaParser
 		private string GetSrc()
 		{
 			StringBuilder inputFileSrc;
-#if DEBUG
-			StreamReader sr = new StreamReader(Console.ReadLine());
-			inputFileSrc = new StringBuilder(sr.ReadToEnd());
-#else
+
 			inputFileSrc = new StringBuilder();
 			string line = "";
 			while ((line = Console.ReadLine()) != null)
 			{
 				inputFileSrc.AppendLine(line);
 			}
-#endif
+
 			return inputFileSrc.ToString();
 		}
 	}
