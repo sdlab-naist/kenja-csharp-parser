@@ -90,7 +90,6 @@ namespace KenjaParser
 			{
 				inputFileSrc.AppendLine(line);
 			}
-			inputFileSrc = inputFileSrc.Remove(inputFileSrc.Length - 1, 1);
 #endif
 			return inputFileSrc.ToString();
 		}
