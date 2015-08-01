@@ -27,7 +27,15 @@ namespace KenjaParser
 			{
 				if (!string.IsNullOrEmpty(line)) {
 					TreeWriter treeWrite = new TreeWriter(GetSrcFromBlobID(line));
-					treeWrite.Write(Path.Combine(args[1], line));
+					try
+					{
+						treeWrite.Write(Path.Combine(args[1], line));
+					}
+					catch (Exception e)
+					{
+						Console.WriteLine("parsing " + line + " was not completed correctly.");
+						Console.WriteLine(e.StackTrace);
+					}
 				}
 			}
 		}
