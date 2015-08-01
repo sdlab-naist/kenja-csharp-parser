@@ -22,16 +22,6 @@ namespace KenjaParser
 		{
 			if (!CheckArgs()) {return;}
 
-#if DEBUG
-			StreamReader sr = new StreamReader(Console.ReadLine());
-			string line = "";
-			while ((line = sr.ReadLine()) != null) {
-				if (!string.IsNullOrEmpty(line)) {
-					TreeWriter treeWrite = new TreeWriter(GetSrcFromBlobID(line));
-					treeWrite.Write(Path.Combine(args[1], line));
-				}
-			}
-#else
 			string line = "";
 			while ((line = Console.ReadLine()) != null)
 			{
@@ -40,7 +30,6 @@ namespace KenjaParser
 					treeWrite.Write(Path.Combine(args[1], line));
 				}
 			}
-#endif
 		}
 
 		protected override bool CheckArgs()
