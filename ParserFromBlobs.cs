@@ -37,7 +37,7 @@ namespace KenjaParser
 			string outputDirectory = args[1];
 			if (!CheckDirectoryExists(outputDirectory)) {return false;}
 
-			string repoPath = Path.Combine(args[0], ".git");
+			string repoPath = args[0];
 			if (!CheckGitRepoExists(repoPath)) {return false;}
 			repo = new FileRepository(repoPath);
 
